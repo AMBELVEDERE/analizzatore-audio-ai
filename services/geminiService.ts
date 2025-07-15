@@ -40,7 +40,7 @@ export const analyzeAudio = async (file: File, analysisType: AnalysisType): Prom
     throw new Error("La chiave API di Gemini non è stata configurata. Assicurati che la variabile d'ambiente VITE_GEMINI_API_KEY sia impostata.");
   }
   
-  // *** INIZIO CORREZIONE QUI ***
+  // *** QUESTE SONO LE RIGHE CORRETTE CHE DEVONO ESSERE NEL TUO CODICE ***
 
   // 1. Inizializza GoogleGenerativeAI passando un OGGETTO con apiKey
   const genAI = new GoogleGenerativeAI({ apiKey: GEMINI_API_KEY }); 
@@ -48,7 +48,7 @@ export const analyzeAudio = async (file: File, analysisType: AnalysisType): Prom
   // 2. Ottieni l'istanza del modello specifico che vuoi usare
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   
-  // *** FINE CORREZIONE QUI ***
+  // *** FINE RIGHE CORRETTE ***
 
   const base64Audio = await fileToBase64(file);
   
@@ -62,13 +62,11 @@ export const analyzeAudio = async (file: File, analysisType: AnalysisType): Prom
   const prompt = getPromptForAnalysisType(analysisType);
   const textPart = { text: prompt };
 
-  // 3. Chiama generateContent() sull'istanza del modello, non su `ai.models`
+  // 3. Chiama generateContent() sull'istanza del modello
   const result = await model.generateContent({
     contents: [{ text: prompt }, audioPart],
   });
 
-  // La risposta dell'API può essere contenuta in un campo "response" o direttamente.
-  // La documentazione suggerisce result.response per il client JS.
-  const response = await result.response; // Ottieni l'oggetto Response
-  return response.text(); // Accedi al testo usando .text()
+  const response = await result.response;
+  return response.text(); 
 };
