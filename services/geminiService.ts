@@ -1,5 +1,6 @@
+// src/services/geminiService.ts
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AnalysisType } from '../types';
 
 const fileToBase64 = (file: File): Promise<string> => {
@@ -8,12 +9,11 @@ const fileToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
     reader.onload = () => {
       const result = reader.result as string;
-      // Remove "data:*/*;base64," prefix
       const base64String = result.split(',')[1];
       if (base64String) {
         resolve(base64String);
       } else {
-        reject(new Error("Failed to read file as base64."));
+        reject(new Error("Errore durante la lettura del file come base64."));
       }
     };
     reader.onerror = error => reject(error);
@@ -34,11 +34,14 @@ const getPromptForAnalysisType = (type: AnalysisType): string => {
 };
 
 export const analyzeAudio = async (file: File, analysisType: AnalysisType): Promise<string> => {
-  if (!process.env.API_KEY) {
-    throw new Error("La chiave API di Gemini non è stata configurata. Assicurati che la variabile d'ambiente process.env.API_KEY sia impostata.");
+  // *** CORREZIONE CRUCIALE: Accesso alla variabile d'ambiente di Vite ***
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+  if (!GEMINI_API_KEY) {
+    throw new Error("La chiave API di Gemini non è stata configurata. Assicurati che la variabile d'ambiente VITE_GEMINI_API_KEY sia impostata.");
   }
   
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenerativeAI(GEMINI_API_KEY); // O { apiKey: GEMINI_API_KEY } se hai ripristinato l'altro formato
 
   const base64Audio = await fileToBase64(file);
   
@@ -54,7 +57,7 @@ export const analyzeAudio = async (file: File, analysisType: AnalysisType): Prom
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
-    contents: { parts: [textPart, audioPart] },
+    contents: [{ text: prompt }, audioPart],
   });
 
   return response.text;
