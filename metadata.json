@@ -1,0 +1,5 @@
+{
+  "name": "Analizzatore Audio AI",
+  "description": "Un'applicazione per caricare file audio (MP3, WAV) e generare riassunti, mappe mentali e analisi degli speaker utilizzando Gemini AI.",
+  "requestFramePermissions": []
+}
