@@ -1,4 +1,4 @@
-// src/services/geminiService.ts
+// services/geminiService.ts
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AnalysisType } from '../types';
@@ -34,14 +34,15 @@ const getPromptForAnalysisType = (type: AnalysisType): string => {
 };
 
 export const analyzeAudio = async (file: File, analysisType: AnalysisType): Promise<string> => {
-  // *** CORREZIONE CRUCIALE: Accesso alla variabile d'ambiente di Vite ***
+  // *** QUESTE SONO LE RIGHE CRUCIALI DA VERIFICARE ***
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!GEMINI_API_KEY) {
     throw new Error("La chiave API di Gemini non è stata configurata. Assicurati che la variabile d'ambiente VITE_GEMINI_API_KEY sia impostata.");
   }
   
-  const ai = new GoogleGenerativeAI(GEMINI_API_KEY); // O { apiKey: GEMINI_API_KEY } se hai ripristinato l'altro formato
+  const ai = new GoogleGenerativeAI(GEMINI_API_KEY); 
+  // *** FINE RIGHE CRUCIALI ***
 
   const base64Audio = await fileToBase64(file);
   
